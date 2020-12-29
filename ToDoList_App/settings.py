@@ -26,7 +26,7 @@ SECRET_KEY = '=6ysz+ay#1ngd^l#f4=jjnl-2+!xs*q@ww+ut31m)5+tmfy6ot'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gary-todo-list.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
