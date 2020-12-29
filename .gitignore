@@ -68,7 +68,7 @@ coverage.xml
 
 # pyenv 
 .python-version 
-
+.procfile.txt
 # celery 
 celerybeat-schedule.* 
 
