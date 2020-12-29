@@ -19,7 +19,8 @@ from . import views
 
 app_name='todo'
 urlpatterns = [
-    path('', views.home.as_view(), name='home'),
-    path('add_item', views.add_item, name='add'),
+    path('', views.homepage, name='index'),
+    path('index/', views.home.as_view(), name='home'),
+    path('add_item/', views.add_item, name='add'),
     path('delete/<int:item_id>',views.delete_item, name='del')
 ]

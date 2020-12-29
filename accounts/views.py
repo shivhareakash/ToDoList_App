@@ -6,27 +6,32 @@ from django.contrib import messages
 
 def register(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        email = request.POST['email']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
+        try:
+            username = request.POST['username']
+            password1 = request.POST['password1']
+            password2 = request.POST['password2']
+            email = request.POST['email']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
 
-        if password1!=password2:
-            messages.error(request, "Passwords do not match!")
+            if password1!=password2:
+                messages.error(request, "Passwords do not match!")
+                return redirect('accounts:register')
+            elif User.objects.filter(username=username).exists():
+                messages.error(request, "Username already taken!")
+                return redirect('accounts:register')
+            elif User.objects.filter(email=email).exists():
+                messages.error(request, "Email already registered!")
+                return redirect('accounts:register')
+            else:
+                user_created = User.objects.create_user(username=username, password=password1, email=email, first_name=first_name, last_name=last_name)
+                user_created.save();
+                messages.info(request, "Thanks, user created")
+                return redirect('accounts:login')
+        except(ValueError):
+            messages.error(request,"All fields need to be filled!")
             return redirect('accounts:register')
-        elif User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken!")
-            return redirect('accounts:register')
-        elif User.objects.filter(email=email).exists():
-            messages.error(request, "Email already registered!")
-            return redirect('accounts:register')
-        else:
-            user_created = User.objects.create_user(username=username, password=password1, email=email, first_name=first_name, last_name=last_name)
-            user_created.save();
-            print(user_created)
-            return redirect('accounts:login')
+
 
     else:
         return render(request, 'accounts/register.html')
@@ -51,5 +56,5 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect('todo:home')
+    return redirect('todo:index')
 

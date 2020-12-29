@@ -18,6 +18,7 @@
 
                     <h1 class="navbar-brand float-start"><b>{{user.first_name}}'s Todo List</b></h1>
                 <h5 class="navbar-brand float-end"><b>Welcome, {{user.first_name}}!</b></h5>
+        <span class="form-text">Last login @:{{ user.last_login }}</span>
                     <form action="{% url 'accounts:logout' %}">
                         <button class='btn btn-danger btn-sm' type="submit">Logout</button>
                     </form>
