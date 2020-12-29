@@ -14,7 +14,25 @@
 
 <nav class="navbar navbar-dark bg-primary"  >
     <div class="container-fluid">
-        <h1 class="navbar-brand"  ><b>My Todo List</b></h1>
+        {% if user.is_authenticated %}
+
+                    <h1 class="navbar-brand float-start"><b>{{user.first_name}}'s Todo List</b></h1>
+                <h5 class="navbar-brand float-end"><b>Welcome, {{user.first_name}}!</b></h5>
+                    <form action="{% url 'accounts:logout' %}">
+                        <button class='btn btn-danger btn-sm' type="submit">Logout</button>
+                    </form>
+
+
+        {% else %}
+                <h1 class="navbar-brand"  ><b>My Todo List</b></h1>
+               <form action="{% url 'accounts:login' %}">
+                    <button class='btn btn-info btn-sm ' type="submit"><b>Login</b></button>
+               </form>
+               <form action="{% url 'accounts:register' %}">
+                    <button class='btn btn-warning btn-sm' type="submit"><b>Register</b></button>
+               </form>
+            {% endif %}
+
     </div>
 </nav>
 

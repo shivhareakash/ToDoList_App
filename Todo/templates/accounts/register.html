@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form class="form-inline" action="{% url 'accounts:register' %}" method="POST">
+{% csrf_token %}
+
+<div class="container">
+    <h3> User Registeration:</h3></br>
+
+
+        <div class=" form-text ">Enter Your First Name:<input type="text" name="first_name" class="form-control"> </div>
+
+        <div class="form-text">Enter Your Last Name:<input type="text" name="last_name" class="form-control"> </div>
+
+        <div class="form-text">Enter desired Username:<input type="text" name="username" class="form-control"> </div>
+
+        <div class="form-text">Enter desired password:<input type="password" name="password1" class="form-control"> </div>
+
+        <div class="form-text">ReEnter the password:<input type="password" name="password2" class="form-control"> </div>
+
+        <div class="form-text">Enter email:<input type="email" name="email" class="form-control"> </div>
+
+
+     <div class="float-end">
+            <button type="submit" class="btn btn-primary">Register</button>
+
+        </div>
+
+      <div class="text-danger">
+           {% for message in messages %}
+                {{message}}
+          {% endfor %}
+      </div>
+</div>
+
+</form>
+{% endblock %}
