@@ -116,7 +116,6 @@ GitHub.sublime-settings
 .history
 
 
-**/migrations 
 *.DS_Store 
 **/pycache 
 **/.DS_Store
