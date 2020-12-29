@@ -1,0 +1,1 @@
+This is an app which allows users to create and manage their own to do list.
