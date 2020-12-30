@@ -30,7 +30,7 @@ def add_item(request):
 
 @login_required
 def delete_item(request, item_id):
-    if TodoDB.objects.get(id=item_id).owner==request.owner:
+    if TodoDB.objects.get(id=item_id).owner==request.user:
         TodoDB.objects.get(id=item_id).delete()
     else:
         raise Http404
