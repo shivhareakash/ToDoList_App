@@ -7,19 +7,25 @@ from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 
+from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def homepage(request):
     return render(request, 'todo/homepage.html')
 
 
 
-class list(generic.ListView):
+# @login_required ---We can't use the login_required decorator on a class like that. We need to use method_decorator and pass LoginRequiredMixin
+@method_decorator(login_required, name='dispatch')
+class list(LoginRequiredMixin, generic.ListView):
+
     template_name = 'todo/index.html'
     context_object_name ='context'
 
     def get_queryset(self):
         all_item = TodoDB.objects.filter(owner=self.request.user).order_by('-date_added')
         return all_item
+
 
 @login_required
 def add_item(request):

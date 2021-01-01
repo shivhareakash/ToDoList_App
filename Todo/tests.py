@@ -103,7 +103,9 @@ class Views_test(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Sorry! You must login to view your items.")
         #User tries to visit home page ie /index/ which contains details of object
-        self.assertRaises(TypeError,self.client.get, reverse('todo:list'))
+        response = self.client.get(reverse('todo:list'))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, expected_url='/accounts/login/?next=/list/', target_status_code=404)
 
 
     def test_7_add_object_when_not_loggedin(self):
