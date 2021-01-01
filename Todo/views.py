@@ -15,8 +15,8 @@ def homepage(request):
 
 
 
-# @login_required ---We can't use the login_required decorator on a class like that. We need to use method_decorator and pass LoginRequiredMixin
-@method_decorator(login_required, name='dispatch')
+# @login_required ---We can't use the login_required decorator on a class like that. We need to use method_decorator or pass LoginRequiredMixin
+# @method_decorator(login_required, name='dispatch')
 class list(LoginRequiredMixin, generic.ListView):
 
     template_name = 'todo/index.html'
