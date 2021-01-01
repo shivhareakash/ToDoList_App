@@ -13,7 +13,7 @@ def homepage(request):
 
 
 
-class home(generic.ListView):
+class list(generic.ListView):
     template_name = 'todo/index.html'
     context_object_name ='context'
 
@@ -25,8 +25,8 @@ class home(generic.ListView):
 def add_item(request):
     item_name=TodoDB.objects.create(item_text=request.POST['item'], date_added=timezone.now(), owner=request.user)
     item_name.save()
-    print(item_name.id)
-    return redirect('todo:home')
+    print("Message from the view function- created item with item id: "+ str(item_name.id))
+    return redirect('todo:list')
 
 @login_required
 def delete_item(request, item_id):
@@ -34,4 +34,7 @@ def delete_item(request, item_id):
         TodoDB.objects.get(id=item_id).delete()
     else:
         raise Http404
-    return redirect('todo:home')
+    return redirect('todo:list')
+#if redirect to a view needed some arguments, they could be passed like this
+# return redirect(viewArticles, year = "2045", month = "02")
+

@@ -4,7 +4,7 @@
 
 {% if user.is_authenticated %}
 <br><br>
-<a href="{% url 'todo:home' %}"><b>View Your Todo list</b></a>
+<a href="{% url 'todo:list' %}"><b>View Your Todo list</b></a>
 {% else %}
             <h5>Sorry! You must login to view your items.</h5>
             <span class="align-top">

@@ -45,7 +45,7 @@ def login(request):
         user_authentication = auth.authenticate(username=username, password=password)
         if user_authentication:
             auth.login(request, user_authentication)
-            return redirect('todo:home')
+            return redirect('todo:list')
 
         else:
             messages.error(request, "Username or Password do not match, try again!")
