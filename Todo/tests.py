@@ -7,9 +7,17 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.urls import reverse
 
 
-def setup():
+def user1_setup():
     '''Creating a test user'''
     user = User.objects.create_user(username='test', email='test@test.com')
+    user.set_password('12345')
+    #Tip: f you set the password through the argument, it will be saved as hash of 12345, so this is the right way
+    user.save()
+    return user
+
+def user2_setup():
+    '''Creating a test user'''
+    user = User.objects.create_user(username='gary', email='gary@gary.com')
     user.set_password('12345')
     #Tip: f you set the password through the argument, it will be saved as hash of 12345, so this is the right way
     user.save()
@@ -21,14 +29,14 @@ class Models_test(TestCase):
     def test_1_add_object_as_owner(self):
         '''Checking if the test user can add object'''
 
-        dummy = TodoDB.objects.create(item_text="Testing",date_added=timezone.now(), owner=setup())
+        dummy = TodoDB.objects.create(item_text="Testing",date_added=timezone.now(), owner=user1_setup())
         self.assertEqual(TodoDB.objects.get(id=dummy.id).item_text, "Testing")
 
 
     def test_2_del_object_as_owner(self):
         '''Checking if the test user can delete object'''
 
-        dummy = TodoDB.objects.create(item_text="Testing", date_added=timezone.now(), owner=setup())
+        dummy = TodoDB.objects.create(item_text="Testing", date_added=timezone.now(), owner=user1_setup())
         TodoDB.objects.get(id=dummy.id).delete()
         #Tip: This delete issues object deletion in the db but python instance (dummy) remains alive. So, query needs to b
         #Tip:  fetched again as previous query is still stored in python variable dummy. >> https://docs.djangoproject.com/en/2.1/ref/models/instances/#django.db.models.Model.delete
@@ -50,7 +58,7 @@ class Models_test(TestCase):
 
 def create_object():
     '''This function creates an entry with owner/user- test'''
-    dummy = TodoDB.objects.create(item_text="Testing", date_added=timezone.now(), owner=setup())
+    dummy = TodoDB.objects.create(item_text="Testing", date_added=timezone.now(), owner=user1_setup())
     return dummy
 
 class Views_test(TestCase):
@@ -59,7 +67,7 @@ class Views_test(TestCase):
     def test_4_add_and_view_object_as_owner(self):
         '''create user, login and view entry'''
         # Create user
-        setup()
+        user1_setup()
 
         # login as user
         login = self.client.login(username='test', password='12345')
@@ -105,7 +113,7 @@ class Views_test(TestCase):
         #User tries to visit home page ie /index/ which contains details of object
         response = self.client.get(reverse('todo:list'))
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, expected_url='/accounts/login/?next=/list/', target_status_code=404)
+        self.assertRedirects(response, expected_url='/accounts/login/?next=/list/', target_status_code=200)
 
 
     def test_7_add_object_when_not_loggedin(self):
@@ -114,18 +122,22 @@ class Views_test(TestCase):
         #add entry when not loggedin
         response =self.client.post(reverse('todo:add'), {'item':'Hello'})
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response ,expected_url="/accounts/login/?next=/add_item/",target_status_code=404)
-        # The above line checks if the redirect is being done to the expected url with target_Status_code=404
+        self.assertRedirects(response ,expected_url="/accounts/login/?next=/add_item/",target_status_code=200)
+        # The above line checks if the redirect is being done to the expected url with target_Status_code=200
 
     def test_8_delete_object_when_not_loggedin(self):
         '''Creating data with test user'''
         a = create_object()
 
         # Trying to delete via url pattern as Anonymous user
-        self.client.get(reverse('todo:del', args=[a.id]))
+        response1 = self.client.get(reverse('todo:del', args=[a.id]))
+        self.assertEqual(response1.status_code, 302)
+
 
         #Check with test user if data still present
-        self.client.login(username='test', password='12345')
+        login = self.client.login(username='test', password='12345')
+        self.assertIs(login, True)
+
         response = self.client.get(reverse('todo:list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Testing")
@@ -133,27 +145,35 @@ class Views_test(TestCase):
         #Trying to check directly via models
         self.assertEqual(TodoDB.objects.get(id=a.id).item_text,"Testing")
 
-    def test_9_add_object_as_non_owner(selfself):
+
+    def test_9_delete_object_as_non_owner(self):
         '''Test to see if non_owner can delete data'''
+        # Creating element as user1
+        a = create_object()
+        # Logging in as user2
+        user2_setup()
+        login = self.client.login(username='gary', password='12345')
+        self.assertIs(login, True)
 
-        pass
+        # deleting entry with user2 login
+        response=self.client.get(reverse('todo:del',args=[a.id]))
+        self.assertEqual(response.status_code, 404)
 
-    def test_10_delete_object_as_non_owner(self):
-        '''Test to see if non_owner can delete data'''
-        pass
+        #Checking the entry is still there
+        self.assertEqual(TodoDB.objects.get(id=a.id).item_text, "Testing")
 
 
-    def test_11_view_object_as_non_owner(self):
+    def test_10_view_object_as_non_owner(self):
         '''Checking if user1 can view data of user2'''
 
-        # Creating element as test user
+        # Creating element as user1
         create_object()
+        #Logging in as user2
+        user2_setup()
 
-        #Loging in as random user
-        random_user= User.objects.create_user(username='gary')
-        random_user.set_password('12345')
-        random_user.save()
-        self.client.login(username='gary', password='12345')
+        login = self.client.login(username='gary', password='12345')
+        self.assertIs(login, True)
+
         response = self.client.get(reverse('todo:list'))
         self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context_data['context'], [])

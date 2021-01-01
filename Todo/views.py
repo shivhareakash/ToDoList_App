@@ -28,6 +28,8 @@ class list(LoginRequiredMixin, generic.ListView):
 
 
 @login_required
+# //login_required(redirect_field_name='next', login_url=None)
+#login_required redirects the non-logged in user to the page passed in its login_url argument or whatever we have defined in settings.py >>LOGIN_URL
 def add_item(request):
     item_name=TodoDB.objects.create(item_text=request.POST['item'], date_added=timezone.now(), owner=request.user)
     item_name.save()
