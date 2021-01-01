@@ -151,7 +151,7 @@ if cwd == '/app' or cwd[:4] == '/tmp':
 
     # Only allow heroku to host the project.
     ALLOWED_HOSTS = ['*']
-    DEBUG = True
+    DEBUG = False
 
 #Login Settings
 LOGIN_URL = '/accounts/login/'
