@@ -11,7 +11,7 @@ media
 
 # If you are using PyCharm # 
 .idea/**/workspace.xml 
-.idea/**
+.idea/
 .idea/**/tasks.xml 
 .idea/dictionaries 
 .idea/**/dataSources/ 
