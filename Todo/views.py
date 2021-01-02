@@ -16,6 +16,8 @@ def homepage(request):
 
 
 # @login_required ---We can't use the login_required decorator on a class like that. We need to use method_decorator or pass LoginRequiredMixin
+# When using class-based views, you can achieve the same behavior as with login_required by using the LoginRequiredMixin. This mixin should be at the leftmost position in the inheritance list.
+
 # @method_decorator(login_required, name='dispatch')
 class list(LoginRequiredMixin, generic.ListView):
 
