@@ -13,33 +13,42 @@ on:
     branches:
       - master
       - develop
-      -
+
 # Jobs definition
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
+
+    # DB configuration
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: Todo_all_db
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+  # Steps
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run migrations
-        run: python manage.py migrate
-      - name: Run tests
-        run: python manage.py test
-
-      - name: Test with pytest
-        run: |
-          pip install pytest
-          pytest
-
-      - name: Run migrations
-        run: python manage.py migrate
-      - name: Run tests
-        run: python manage.py test
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: psycopg2 prerequisites
+      run: sudo apt-get install python-dev libpq-dev
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '11'
+    - name: Run migrations
+      run: python manage.py migrate
+    - name: Run tests
+      run: python manage.py test
